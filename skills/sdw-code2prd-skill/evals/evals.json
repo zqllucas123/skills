@@ -1,0 +1,165 @@
+{
+  "skill_name": "sdw-code2prd-skill",
+  "description": "基于 base 项目代码逆向生成汽车软件 PRD 的能力评测",
+  "evals": [
+    {
+      "id": 1,
+      "name": "单项目PRD模板完整性",
+      "prompt": "帮我参照 `./base_repo/adas_domain_base`，分析其中的各个功能模块，并生成 PRD 文档。要求输出单份 Markdown。",
+      "expected_output": "应输出单份 PRD 文档，且章节结构与 `assets/templates/template_prd_automotive_software.md` 一致，至少覆盖文档信息、功能模块总览、功能需求详情、非功能需求、风险待确认等主章节。",
+      "files": [],
+      "assertions": [
+        {
+          "name": "输出为单份PRD文档",
+          "check": "输出明确为单份 Markdown PRD（如 `PRD_from_codebase.md`）",
+          "type": "content_contains"
+        },
+        {
+          "name": "包含文档信息章节",
+          "check": "输出包含 `## 1. 文档信息`",
+          "type": "content_contains"
+        },
+        {
+          "name": "包含功能总览章节",
+          "check": "输出包含 `## 5. 功能模块总览`",
+          "type": "content_contains"
+        },
+        {
+          "name": "包含功能需求详情章节",
+          "check": "输出包含 `## 6. 功能需求详情`",
+          "type": "content_contains"
+        },
+        {
+          "name": "包含非功能需求章节",
+          "check": "输出包含 `## 7. 非功能需求（汽车软件）`",
+          "type": "content_contains"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "多模块汇总到单文档",
+      "prompt": "请分析 `./base_repo/parking_stack_base`，拆解车位检测、轨迹规划、控制执行三个模块，并生成 PRD。",
+      "expected_output": "应在同一份 PRD 中汇总三个模块，模块之间依赖关系清晰，不拆分为多个独立 PRD 文件。",
+      "files": [],
+      "assertions": [
+        {
+          "name": "功能模块总览含多个模块",
+          "check": "输出中的功能模块总览至少体现 3 个模块",
+          "type": "content_pattern"
+        },
+        {
+          "name": "模块依赖关系可见",
+          "check": "输出包含依赖模块字段或等价依赖描述",
+          "type": "content_contains"
+        },
+        {
+          "name": "明确单文档汇总",
+          "check": "输出包含“汇总到一份 PRD”或等价表述",
+          "type": "content_contains"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "模板子章节覆盖检查",
+      "prompt": "基于 `./base_repo/cockpit_hmi_base` 生成 PRD，重点分析用户登录与个性化配置模块。",
+      "expected_output": "每个模块应覆盖模板中的目标、场景、主流程、异常流程、输入输出、业务规则、验收标准与代码证据追溯子章节。",
+      "files": [],
+      "assertions": [
+        {
+          "name": "模块目标子章节存在",
+          "check": "输出包含 `模块目标` 子章节",
+          "type": "content_contains"
+        },
+        {
+          "name": "主流程与异常流程齐全",
+          "check": "输出同时包含 `主业务流程` 与 `异常流程与边界处理`",
+          "type": "content_contains"
+        },
+        {
+          "name": "验收标准可测试",
+          "check": "输出包含 `验收标准` 并采用条件与预期结果描述",
+          "type": "content_pattern"
+        },
+        {
+          "name": "代码追溯信息存在",
+          "check": "输出包含 `代码证据与追溯` 章节",
+          "type": "content_contains"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "汽车软件非功能要求覆盖",
+      "prompt": "分析 `./base_repo/domain_controller_base` 并生成 PRD，要求体现汽车软件非功能需求。",
+      "expected_output": "应覆盖性能、可靠性、功能安全、网络安全、可观测性、可维护性等非功能需求维度。",
+      "files": [],
+      "assertions": [
+        {
+          "name": "性能要求存在",
+          "check": "输出包含 `7.1 性能需求`",
+          "type": "content_contains"
+        },
+        {
+          "name": "功能安全要求存在",
+          "check": "输出包含 `7.3 功能安全需求`",
+          "type": "content_contains"
+        },
+        {
+          "name": "网络安全要求存在",
+          "check": "输出包含 `7.4 网络与信息安全需求`",
+          "type": "content_contains"
+        },
+        {
+          "name": "可观测性要求存在",
+          "check": "输出包含 `7.5 可观测性与诊断`",
+          "type": "content_contains"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "约束遵循-不修改base代码",
+      "prompt": "请参照 `./base_repo/chassis_control_base` 生成 PRD，注意不能修改 base 项目中的代码。",
+      "expected_output": "应明确采用只读分析方式，不执行对 base 项目代码的修改，输出仅为需求文档。",
+      "files": [],
+      "assertions": [
+        {
+          "name": "声明只读分析",
+          "check": "输出包含“仅读取/只读分析/不修改 base 项目代码”描述",
+          "type": "content_contains"
+        },
+        {
+          "name": "交付物为PRD文档",
+          "check": "输出以 PRD 文档交付为主，不包含代码改动指令",
+          "type": "content_pattern"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "证据不足时待确认机制",
+      "prompt": "根据 `./base_repo/legacy_gateway_base` 逆向生成 PRD。该项目注释较少、业务语义不完整。",
+      "expected_output": "应在证据不足部分标注“待确认/推断”，并将问题放入待确认清单，不得伪造明确需求结论。",
+      "files": [],
+      "assertions": [
+        {
+          "name": "存在待确认标记",
+          "check": "输出包含“待确认”或“推断”标记",
+          "type": "content_contains"
+        },
+        {
+          "name": "开放问题清单存在",
+          "check": "输出包含 `11.3 待确认问题（Open Questions）`",
+          "type": "content_contains"
+        },
+        {
+          "name": "风险与假设章节存在",
+          "check": "输出包含 `## 11. 风险、假设与待确认项`",
+          "type": "content_contains"
+        }
+      ]
+    }
+  ]
+}

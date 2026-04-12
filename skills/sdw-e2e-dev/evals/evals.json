@@ -1,0 +1,266 @@
+{
+  "skill_name": "sdw-e2e-dev",
+  "description": "SDW 端到端 PRD 模块实现与 ASPICE 过程执行评测",
+  "evals": [
+    {
+      "id": 1,
+      "name": "单模块完整闭环-泊车轨迹规划",
+      "prompt": "请基于 PRD 文档 `./docs/prd_parking_planner.md` 实现“泊车轨迹规划”模块。参考 base 项目 `./base_repo/auto_parking_base`，严格按 ASPICE 流程执行，并先完成法规与功能安全评估。模块完成后执行预编译，如果失败根据日志自动修复直到成功，并输出所有文档。",
+      "expected_output": "应按顺序完成模块拆解、法规分析、功能安全分析、ASPICE 实现、预编译修复闭环；输出合规分析、功能安全、详细设计、测试用例、编译报告 5 类文档；最终报告中应明确编译成功。",
+      "files": [],
+      "assertions": [
+        {
+          "name": "模块完成报告字段齐全",
+          "check": "输出包含 `## MODULE_DELIVERY_REPORT`，且包含 MODULE_NAME、LEGAL_RESULT、SAFETY_RESULT、ASPICE_STAGES、COMPILE_STATUS 字段",
+          "type": "content_contains"
+        },
+        {
+          "name": "ASPICE阶段可识别",
+          "check": "输出包含 `ASPICE_STAGES:`，且值中出现 SWE.1 或 SWE.2 或 SWE.3",
+          "type": "content_contains"
+        },
+        {
+          "name": "编译成功状态明确",
+          "check": "输出包含 `COMPILE_STATUS: pass` 和 `COMPILE_RETRY_COUNT:`",
+          "type": "content_contains"
+        },
+        {
+          "name": "关键参考资料已引用",
+          "check": "输出包含 `REFERENCES_USED:`，且包含 `references/自动驾驶系统安全要求.pdf`",
+          "type": "content_contains"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "多模块顺序实现-感知融合与控制",
+      "prompt": "我上传了两个 PRD：`./docs/prd_perception_fusion.md` 和 `./docs/prd_motion_control.md`。请按模块逐个实现，不要并行混改；参考 `./base_repo/sdw_base`，遵循 skills/SWE2_Skill_glm 的 ASPICE 流程，并在每个模块完成后执行预编译与自动修复。",
+      "expected_output": "应先输出模块清单并逐个推进；每个模块均有独立的法规/安全/设计/测试/编译文档；不得把两个模块的实现和报告混在同一轮中；每轮均有预编译结论。",
+      "files": [],
+      "assertions": [
+        {
+          "name": "至少两个模块报告",
+          "check": "输出至少包含两段 `## MODULE_DELIVERY_REPORT`",
+          "type": "content_pattern"
+        },
+        {
+          "name": "每模块编译状态字段存在",
+          "check": "每段模块报告均包含 `COMPILE_STATUS:` 与 `COMPILE_RETRY_COUNT:`",
+          "type": "content_pattern"
+        },
+        {
+          "name": "模块顺序执行证据",
+          "check": "输出包含“模块清单”或“顺序实现”描述，且非并行实现",
+          "type": "content_contains"
+        },
+        {
+          "name": "编译指南引用",
+          "check": "输出包含 `references/compile_guide.md`",
+          "type": "content_contains"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "法规不通过阻断实现",
+      "prompt": "根据 `./docs/prd_remote_override.md` 实现“远程强制接管车辆控制”功能。要求先做中国汽车法规分析和功能安全分析，参考 `./base_repo/sdw_base`。",
+      "expected_output": "若法规评估不通过，应明确阻断编码阶段并给出整改建议，不应直接进入实现或提交代码改动；需产出合规风险结论与后续建议。",
+      "files": [],
+      "assertions": [
+        {
+          "name": "法规结论字段存在",
+          "check": "输出包含 `LEGAL_RESULT:` 字段",
+          "type": "content_contains"
+        },
+        {
+          "name": "不通过时阻断编码",
+          "check": "输出包含 `LEGAL_RESULT: 不通过` 或 `LEGAL_RESULT: 有风险`，并包含“阻断实现”或“暂停编码”描述",
+          "type": "content_contains"
+        },
+        {
+          "name": "提供整改建议",
+          "check": "输出包含“整改建议”或“后续动作”描述",
+          "type": "content_contains"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "功能安全高风险重设计",
+      "prompt": "请实现 PRD `./docs/prd_auto_lane_change.md` 中“自动变道决策”模块，要求符合 ASPICE。若功能安全分析风险过高，先调整方案再落地。参考项目：`./base_repo/highway_assist_base`。",
+      "expected_output": "应先给出功能安全分析与风险等级；在风险不可接受时先给出重设计方案并更新详细设计，再进入实现与测试；最终文档应体现风险缓解措施。",
+      "files": [],
+      "assertions": [
+        {
+          "name": "安全结果字段存在",
+          "check": "输出包含 `SAFETY_RESULT:` 字段",
+          "type": "content_contains"
+        },
+        {
+          "name": "高风险先重设计",
+          "check": "当安全结论为不可接受或需整改时，输出包含“重设计”或“调整方案”描述",
+          "type": "content_contains"
+        },
+        {
+          "name": "缓解措施可追溯",
+          "check": "输出包含“风险项”与“缓解措施”对应描述",
+          "type": "content_pattern"
+        },
+        {
+          "name": "引用安全PDF依据",
+          "check": "安全分析中引用 references/自动驾驶系统安全要求.pdf 作为依据",
+          "type": "content_contains"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "base已有能力直接复用",
+      "prompt": "实现 `./docs/prd_slot_detection.md` 的“车位线检测”模块。参考 base 项目 `./base_repo/apa_perception_base`。如果 base 中已有同类能力，请直接复用代码和依赖，非必要不要改依赖逻辑。",
+      "expected_output": "应先做法规与安全评估，再给出 base 能力比对结论；对可复用能力进行直接复用并记录映射关系；不应无理由重写已有模块；文档中应说明复用范围与理由。",
+      "files": [],
+      "assertions": [
+        {
+          "name": "能力比对结论存在",
+          "check": "输出包含 base 能力对比与复用可行性判断，并包含 `BASE_REUSE:` 字段",
+          "type": "content_contains"
+        },
+        {
+          "name": "复用结果非none",
+          "check": "输出包含 `BASE_REUSE: partial` 或 `BASE_REUSE: full`",
+          "type": "content_contains"
+        },
+        {
+          "name": "依赖修改受控",
+          "check": "输出包含 `BASE_CODE_MODIFIED: no`，或在为 yes 时给出必要性与影响分析",
+          "type": "content_contains"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "预编译失败自动修复两轮",
+      "prompt": "请实现 `./docs/prd_obstacle_fusion.md` 的“障碍物融合输出”模块，并在完成后触发预编译。假设首轮日志存在头文件缺失和符号未定义错误，请根据日志自动修复并重试，直到通过。",
+      "expected_output": "编译报告应至少包含多轮记录（失败原因、修复动作、重试结果）；修复动作应与日志问题一一对应；最终状态为编译通过或给出可复现阻塞说明。",
+      "files": [],
+      "assertions": [
+        {
+          "name": "多轮编译记录",
+          "check": "输出包含 `COMPILE_RETRY_COUNT:` 且值至少为 2",
+          "type": "content_pattern"
+        },
+        {
+          "name": "日志驱动修复",
+          "check": "每轮失败均有对应错误原因与修复动作说明",
+          "type": "content_pattern"
+        },
+        {
+          "name": "最终状态明确",
+          "check": "输出包含 `COMPILE_STATUS: pass` 或 `COMPILE_STATUS: blocked`",
+          "type": "content_contains"
+        },
+        {
+          "name": "编译指南流程一致",
+          "check": "预编译调用流程与 references/compile_guide.md 一致",
+          "type": "content_contains"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "禁止修改base源码约束验证",
+      "prompt": "参照 `./base_repo/parking_stack_base` 实现 `./docs/prd_path_tracking.md`。注意：禁止修改 base 源码，只允许复制到当前工程并在当前工程内适配。",
+      "expected_output": "实现说明中应明确 base 代码未被改动；改动范围限定在当前项目；若需调整依赖行为，应给出必要性说明和影响分析。",
+      "files": [],
+      "assertions": [
+        {
+          "name": "声明未改base源码",
+          "check": "输出包含 `BASE_CODE_MODIFIED: no`",
+          "type": "content_contains"
+        },
+        {
+          "name": "改动范围受限",
+          "check": "改动范围说明仅限当前项目路径",
+          "type": "content_contains"
+        },
+        {
+          "name": "复用字段存在",
+          "check": "输出包含 `BASE_REUSE:` 字段",
+          "type": "content_contains"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "name": "文档交付完整性检查",
+      "prompt": "请根据 `./docs/prd_valet_parking.md` 完成“代客泊车入口控制”模块，并严格输出 MD 文档：合规分析、功能安全、详细设计、测试用例、编译报告。",
+      "expected_output": "应交付 5 类文档，结构清晰且内容可追溯；测试用例文档需覆盖正常流程、边界条件和异常路径；编译报告需包含最终结论。",
+      "files": [],
+      "assertions": [
+        {
+          "name": "五类文档齐全",
+          "check": "输出包含 `compliance/`、`safety/`、`design/`、`tests/`、`build/` 路径信息",
+          "type": "content_contains"
+        },
+        {
+          "name": "测试覆盖边界与异常",
+          "check": "测试用例文档包含正常、边界、异常路径",
+          "type": "content_contains"
+        },
+        {
+          "name": "模块报告模板存在",
+          "check": "输出包含 `## MODULE_DELIVERY_REPORT` 和 `ASPICE_STAGES:`",
+          "type": "content_contains"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "name": "跨模块追溯一致性",
+      "prompt": "针对 `./docs/prd_parking_fullflow.md`（含感知、规划、控制 3 个模块）进行实现，要求全程遵循 ASPICE，并保持需求-设计-代码-测试追溯一致。",
+      "expected_output": "每个模块都有独立输出并且能追溯到 PRD 对应需求；不应出现“只有代码没有设计/测试”的断链；阶段总结应说明当前追溯状态。",
+      "files": [],
+      "assertions": [
+        {
+          "name": "三模块均有输出",
+          "check": "输出至少包含三段 `## MODULE_DELIVERY_REPORT`",
+          "type": "content_pattern"
+        },
+        {
+          "name": "链路追溯完整",
+          "check": "输出包含“需求-设计-代码-测试”或等价追溯描述",
+          "type": "content_contains"
+        },
+        {
+          "name": "阶段总结包含追溯状态",
+          "check": "阶段总结明确说明追溯状态或待关联项",
+          "type": "content_contains"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "name": "配置读取与敏感信息处理",
+      "prompt": "实现 `./docs/prd_fusion_api.md` 模块后执行预编译。编译配置请从 `/Users/lucaszhou/.sdw/prj/projects.json` 读取并匹配当前项目，不要在输出中暴露账号密码等敏感信息。",
+      "expected_output": "应体现从配置读取编译参数的过程；输出文档不应泄露敏感字段明文；编译报告保留必要诊断信息且不包含凭据。",
+      "files": [],
+      "assertions": [
+        {
+          "name": "配置读取路径正确",
+          "check": "输出说明从 /Users/lucaszhou/.sdw/prj/projects.json 读取 deploy_config",
+          "type": "content_contains"
+        },
+        {
+          "name": "敏感信息未明文泄露",
+          "check": "输出包含 `SENSITIVE_DATA_CHECK: pass`，且不出现明文凭据展示",
+          "type": "content_contains"
+        },
+        {
+          "name": "编译报告保留诊断",
+          "check": "编译报告保留错误诊断与修复信息但不暴露凭据",
+          "type": "content_contains"
+        }
+      ]
+    }
+  ]
+}

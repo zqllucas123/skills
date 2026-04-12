@@ -1,0 +1,107 @@
+{
+  "skill_name": "aspice-swe-executor",
+  "description": "ASPICE SWE 软件开发过程执行能力评估",
+  "evals": [
+    {
+      "id": 1,
+      "name": "完整V模型开发流程",
+      "prompt": "使用ASPICE SWE流程开发一个温度监控系统。需求如下：\n1. 系统需要从温度传感器读取温度值（范围-40°C到125°C）\n2. 当温度超过阈值时触发报警\n3. 支持通过CAN总线发送温度数据\n4. 工作目录设置为 ./temp_monitor_workspace\n\n请按照SWE.1到SWE.6的流程完成开发，生成所有必需的工作产品。",
+      "expected_output": "应生成以下工作产品：\n1. 17-00_Software_Requirements_Specification.md - 包含温度监控功能需求\n2. 04-04_Software_Architecture.md - 包含组件设计\n3. 04-05_Software_Detailed_Design.md - 包含单元设计\n4. 源代码文件\n5. 验证措施和结果文档\n6. 13-51_Traceability_Matrix.csv - 完整追溯性矩阵",
+      "files": [],
+      "assertions": [
+        {
+          "name": "需求文档存在",
+          "check": "工作目录下存在 17-00_Software_Requirements_Specification.md 文件",
+          "type": "file_exists"
+        },
+        {
+          "name": "架构文档存在",
+          "check": "工作目录下存在 04-04_Software_Architecture.md 文件",
+          "type": "file_exists"
+        },
+        {
+          "name": "追溯性矩阵存在",
+          "check": "工作目录下存在 13-51_Traceability_Matrix.csv 文件",
+          "type": "file_exists"
+        },
+        {
+          "name": "需求包含温度范围",
+          "check": "需求文档中包含-40°C到125°C的温度范围要求",
+          "type": "content_contains"
+        },
+        {
+          "name": "架构包含CAN组件",
+          "check": "架构文档中包含CAN通信相关组件",
+          "type": "content_contains"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "需求分析与架构设计",
+      "prompt": "我正在开发一个汽车门控系统，需要完成SWE.1和SWE.2阶段的工作。\n\n系统功能包括：\n- 车门开闭检测\n- 车窗升降控制\n- 后视镜调节\n- 中央锁控制\n\n请帮我完成软件需求分析和架构设计，工作目录为 ./door_control_workspace",
+      "expected_output": "应生成：\n1. 完整的软件需求规格说明书，包含所有功能的详细需求\n2. 软件架构设计文档，包含组件分解和接口定义\n3. 初始追溯性矩阵",
+      "files": [],
+      "assertions": [
+        {
+          "name": "需求文档完整",
+          "check": "需求文档包含车门检测、车窗控制、后视镜、中央锁四个功能模块",
+          "type": "content_contains"
+        },
+        {
+          "name": "架构组件识别",
+          "check": "架构文档识别出至少4个软件组件",
+          "type": "content_pattern"
+        },
+        {
+          "name": "接口定义完整",
+          "check": "架构文档包含接口定义章节",
+          "type": "section_exists"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "单元验证阶段执行",
+      "prompt": "已有一个简单计算器模块（位于 ./calc_workspace），包含加减乘除四个函数的 C 语言实现。请完成 SWE.4 单元验证阶段的工作，包括：\n1. 制定单元验证策略\n2. 为每个函数设计单元测试用例（覆盖正常路径和边界条件，尤其是除法的除零场景）\n3. 记录验证措施和验证结果\n\n工作目录：./calc_workspace",
+      "expected_output": "应生成：\n1. 08-60_Unit_Verification_Measures.md - 包含所有函数的验证策略和测试用例\n2. 15-52_Unit_Verification_Results.md - 包含验证结果记录\n3. tests/unit/ 目录下的测试代码，覆盖边界条件（如除以零）",
+      "files": [
+        {
+          "path": "calc_workspace/src/include/calculator.h",
+          "content": "#ifndef CALCULATOR_H\n#define CALCULATOR_H\n\n#include <stdint.h>\n\n/* Return codes */\n#define CALC_OK        (0)\n#define CALC_ERR_DIV0  (-1)\n\nint32_t calc_add(int32_t a, int32_t b);\nint32_t calc_subtract(int32_t a, int32_t b);\nint32_t calc_multiply(int32_t a, int32_t b);\nint32_t calc_divide(int32_t a, int32_t b, int32_t *result);\n\n#endif /* CALCULATOR_H */"
+        },
+        {
+          "path": "calc_workspace/src/calculator.c",
+          "content": "/**\n * @file    calculator.c\n * @brief   Basic arithmetic operations module\n * @version 1.0\n */\n\n#include \"include/calculator.h\"\n\nint32_t calc_add(int32_t a, int32_t b)\n{\n    return a + b;\n}\n\nint32_t calc_subtract(int32_t a, int32_t b)\n{\n    return a - b;\n}\n\nint32_t calc_multiply(int32_t a, int32_t b)\n{\n    return a * b;\n}\n\nint32_t calc_divide(int32_t a, int32_t b, int32_t *result)\n{\n    if (b == 0)\n    {\n        return CALC_ERR_DIV0;\n    }\n    *result = a / b;\n    return CALC_OK;\n}"
+        }
+      ],
+      "assertions": [
+        {
+          "name": "验证措施文档存在",
+          "check": "存在单元验证措施文档 08-60_Unit_Verification_Measures.md",
+          "type": "file_exists"
+        },
+        {
+          "name": "验证结果文档存在",
+          "check": "存在单元验证结果文档 15-52_Unit_Verification_Results.md",
+          "type": "file_exists"
+        },
+        {
+          "name": "测试代码目录存在",
+          "check": "存在 tests/unit/ 目录",
+          "type": "dir_exists"
+        },
+        {
+          "name": "覆盖除零边界条件",
+          "check": "验证措施文档或测试代码中包含除零（divide by zero 或 b==0）相关测试用例",
+          "type": "content_contains"
+        },
+        {
+          "name": "测试用例追溯到被测函数",
+          "check": "验证措施文档中的测试用例明确关联 calc_add、calc_subtract、calc_multiply 或 calc_divide 中的至少一个函数",
+          "type": "content_pattern"
+        }
+      ]
+    }
+  ]
+}
