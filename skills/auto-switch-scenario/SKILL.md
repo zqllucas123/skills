@@ -1,6 +1,6 @@
 ---
 name: auto-switch-scenario
-description: 切换 DreamCarSim 仿真场景。用于用户说"切换场景"、"换个场景"、"触发场景"、"帮我切换到 xxx 场景"、"选择仿真场景"时。会自动列出 auto_trigger/ 下的可用场景，检查 DreamCarSim.exe 是否运行并按需启动，再触发对应的 AHK 脚本完成场景切换。
+description: 切换 DreamCarSim 仿真场景。用于用户说"切换场景"、"换个场景"、"触发场景"、"帮我切换到 xxx 场景"、"选择仿真场景"时。会自动读取 ~/.sdw/senarios/ 下的可用场景，检查 DreamCarSim.exe 是否运行并按需启动，再触发对应的 AHK 脚本完成场景切换。
 ---
 
 # Auto Switch Scenario
